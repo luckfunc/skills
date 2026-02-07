@@ -1,0 +1,4 @@
+interface:
+  display_name: "CSS Layout Order"
+  short_description: "Reorder CSS declarations with layout-first priority"
+  default_prompt: "Use $css-layout-order to reorder declarations in this stylesheet without changing values."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clean Code JavaScript"
+  short_description: "Review and refactor JS/TS with clean code principles"
+  default_prompt: "Use $clean-code-javascript to review this JS/TS code and suggest maintainability improvements."
