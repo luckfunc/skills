@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit Convention"
+  short_description: "Write clear conventional commit messages"
+  default_prompt: "Use $git-commit-convention to draft commit messages from my changes."
