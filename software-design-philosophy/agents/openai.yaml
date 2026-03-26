@@ -1,0 +1,4 @@
+interface:
+  display_name: "Software Design Philosophy"
+  short_description: "Review and refactor code with complexity-first design rules"
+  default_prompt: "Use $software-design-philosophy to review this code for complexity, abstraction, API, naming, documentation, and maintainability issues."
