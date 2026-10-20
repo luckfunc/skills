@@ -1,73 +1,74 @@
 ---
 name: git-commit-convention
-description: 使用 Conventional Commit 风格生成和审查 Git 提交信息。适用于编写提交信息、定义提交规范、归类变更类型或优化 commit 的 type、scope 和 subject 表达。
+description: Generate and review Git commit messages with a Conventional Commit style. Use when the user asks to write commit messages, define commit conventions, classify change types, or improve commit subject/scope clarity.
 ---
 
-# Git 提交规范
+# Git Commit Convention
 
-## 确定范围与依据
+## Goal
 
-- 优先使用用户明确指定的 diff、提交或文件范围，不混入范围外改动。
-- 用户要求为当前提交生成信息但未指定范围时，以暂存区为准。无暂存改动时，不擅自把整个工作区当作一个提交。可根据已查看的改动给出注明范围的建议。
-- 只有文字描述时，仅依据描述生成，不补造实现细节、测试结果或性能收益。
-- 仓库明确规范与 commitlint 配置优先于本规范。`git log` 仅供参考，不把历史惯例当成强制规则。
-- 生成或审查信息不代表授权执行 Git 写操作。暂存、提交、推送等操作须获得用户另行明确授权。
+Write clear and consistent commit messages in this format:
 
-## 格式与语言
+`<type>(<scope>): <subject>`
 
-使用 `<type>(<scope>): <subject>`。`scope` 可省略。
+`<scope>` is optional. For breaking changes, use `<type>(<scope>)!: <subject>` or `<type>!: <subject>`.
 
-- 默认使用简体中文 `subject`，用户要求或项目明确的语言规范优先。
-- `type` 使用英文，`scope` 沿用稳定的模块标识，如 `users`、`parser`。不要为了填写 scope 临时拼接文件名或罗列所有模块。
-- `subject` 以动词开头，具体说明改了什么，末尾不加句号。
-- 建议 `subject` 不超过 50 个字符，但不为压缩长度牺牲含义。
+## Allowed Types
 
-## 选择主要类型
+- `feat`: Add a new feature.
+- `fix`: Fix a bug.
+- `docs`: Change documentation.
+- `style`: Change code formatting only, no behavior change. Not a general type for UI styling changes.
+- `refactor`: Refactor code without changing intended behavior.
+- `perf`: Change code to improve performance. Do not claim unmeasured gains.
+- `test`: Add or update tests.
+- `chore`: Change tooling or maintenance tasks.
+- `revert`: Revert a previous commit.
+- `build`: Change build/packaging pipeline.
+- `ci`: Change continuous integration configuration or workflows.
 
-按主要变更意图选择一个 type。仓库另有明确类型规则时遵从仓库。
+## Rules
 
-- `feat` 新增或扩展功能。
-- `fix` 修复缺陷。
-- `docs` 独立的文档变更。
-- `style` 仅空白、缩进等格式变更，不改变行为。不是 UI 样式变更的通用类型，UI 改动按意图使用 `feat` 或 `fix`。
-- `refactor` 不改变预期行为的代码重构。
-- `perf` 以性能优化为目的的改动。优化目的不代表已测得收益，无验证依据时不声称提速或给出收益数字。
-- `test` 独立的测试变更。
-- `build` 构建、依赖或打包变更。
-- `ci` 持续集成配置或流程变更。
-- `chore` 其他维护性变更。
-- `revert` 回滚已有提交。
+1. Follow explicit project conventions and commitlint configuration before these defaults. Treat `git log` as context, not a mandatory rule.
+2. Choose one allowed type by primary intent. Tests and documentation that accompany a feature or fix keep that primary type.
+3. Use a stable module name for `scope`, for example `users`, `popup`, `parser`, `build`. Omit it when no clear scope fits.
+4. Keep `subject` short and specific, target 50 characters or fewer without sacrificing clarity.
+5. Use English by default unless the user explicitly requests another language or explicit project conventions require one.
+6. Use an imperative verb in `subject` (for example: `add`, `fix`, `refactor`, `update`).
+7. Avoid ending `subject` with a period.
+8. Keep one logical change per commit message. Suggest splitting independent changes, but do not split or commit automatically.
+9. For confirmed breaking changes, add `!` after the type or scope and a `BREAKING CHANGE:` footer with the actual impact and migration. Flag missing details instead of inventing them.
 
-功能或修复附带的测试、文档沿用主要类型，不因涉及这些文件改用 `test` 或 `docs`。
+## Workflow
 
-## 处理逻辑边界与兼容性
+1. Inspect the actual diff within the user's specified scope. Otherwise, prefer staged changes. If nothing is staged, do not automatically include the whole working tree. Label any suggestion's inspected scope.
+2. If only a description is available, use only its facts. Do not invent implementation details, test results, or performance gains.
+3. Identify the primary intent of the change (feature, bug fix, docs, refactor, etc.).
+4. Map that intent to one allowed type.
+5. Infer a concise scope from touched files/modules when available.
+6. Draft a subject that states what changed and why it matters, supported by the evidence.
+7. Validate the scope, facts, format, and breaking-change details before returning.
 
-- 一个逻辑变更可以涉及多个文件，不按文件数拆分。
-- 多个独立改动建议拆分提交，但不擅自拆分或执行提交。用户要求合并时，用准确的共同概括作标题，必要时在正文列明各项改动。
-- 确认存在破坏性变更时，在标题的 type 或 scope 后加 `!`，如 `feat(api)!: ...`。
-- 同时用 `BREAKING CHANGE: ...` footer 说明影响与迁移方式。依据实际 diff 或明确描述判断，不猜测兼容性破坏或编造迁移步骤。缺少必要信息时明确指出。
+Generating or reviewing a message does not authorize Git writes. Staging, committing, and pushing require explicit user authorization.
 
-## 输出与检查
+## Output Contract
 
-- 默认只输出一条完整 commit message，放在一个代码块中，不给无谓候选。
-- 仅在需要注明建议范围、说明拆分建议或指出缺失信息时补充简短说明。
-- 审查已有信息时，指出具体问题并给出修订。没有问题则直接说明无需修改。
-- 输出前检查范围是否正确、type 是否符合主要意图、scope 是否稳定且必要、事实是否有依据、独立改动是否需建议拆分、兼容性是否已准确说明。
+- Return one recommended commit message by default, wrapped in backticks. Use a fenced code block for a multiline message.
+- Add brief notes only for scope, suggested splits, or missing facts. Provide alternatives only when requested.
+- For independent changes, suggest separate messages without executing the split.
 
-## 示例
+## Examples
+
+- `feat(users): add login functionality`
+- `fix(parser): handle trailing comma in JSON input`
+- `docs(readme): add Chrome Web Store link`
+- `refactor(theme): extract shared color tokens`
+- `build(vite): split vendor chunk`
+
+For a confirmed response-field removal with a known replacement:
 
 ```text
-feat(users): 新增邮箱登录
-```
+feat(api)!: remove name from user responses
 
-```text
-fix(dialog): 修复窄屏下确认按钮被遮挡
-```
-
-已确认删除接口字段并提供替代字段时：
-
-```text
-feat(api)!: 移除用户响应中的 name 字段
-
-BREAKING CHANGE: 用户响应不再包含 name，调用方改用 displayName。
+BREAKING CHANGE: User responses no longer include name. Use displayName instead.
 ```
